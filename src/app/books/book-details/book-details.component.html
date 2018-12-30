@@ -1,4 +1,4 @@
-<div *ngIf="book">
+<div *ngIf="book; else errorMessage">
   <h1>{{ book.title }}</h1>
   <h3>{{ book.subtitle }}</h3>
   <div class="ui divider"></div>
@@ -11,16 +11,20 @@
     </div>
     <div class="four wide column">
       <h4>ISBN</h4>
-      {{ book.isbn }}
+      {{ book.isbn | isbn:true }}
     </div>
     <div class="four wide column">
       <h4>Erschienen</h4>
-      {{ book.published }}
+      {{ book.published | date:'longDate' }}
     </div>
     <div class="four wide column">
       <h4>Rating</h4>
-      <i class="yellow star icon"
-        *ngFor="let r of getRating(book.rating)" ></i>
+      <ng-container
+        *ngFor="let r of getRating(book.rating);
+                index as i">
+        <i class="yellow star icon"
+          *bmDelay="500 + i * 200"></i>
+      </ng-container>
     </div>
   </div>
   <h4>Beschreibung</h4>
@@ -29,8 +33,16 @@
     <img *ngFor="let thumbnail of book.thumbnails"
       [src]="thumbnail.url">
   </div>
-  <button class="ui red button"
-    (click)="showBookList()" >
-    Zurück zur Buchliste
+  <button class="ui tiny red labeled icon button"
+          (click)="removeBook()">
+    <i class="remove icon"></i> Buch löschen
   </button>
+  <a class="ui tiny yellow labeled icon button"
+    [routerLink]="['../../admin/edit', book.isbn]">
+    <i class="write icon"></i> Buch bearbeiten
+  </a>
 </div>
+
+<ng-template #errorMessage>
+  <div class="ui active centered inline loader"></div>
+</ng-template>
